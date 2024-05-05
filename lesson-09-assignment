@@ -1,0 +1,36 @@
+import nltk
+from nltk.tokenize import word_tokenize
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+# 指定文件路径
+file_path = 'C:/Users/86178/199801.txt'
+
+# 读取文本数据
+text_data = []
+with open(file_path, 'r', encoding='utf-8') as file:
+    for line in file:
+        text_data.append(line.strip())
+
+# 将文本数据转换为字符串
+text = '\n'.join(text_data[:16])
+
+# 分词
+tokens = word_tokenize(text)
+
+# 去除停用词
+stopwords = set(nltk.corpus.stopwords.words('chinese'))
+filtered_tokens = [word for word in tokens if word.lower() not in stopwords]
+
+# 计算TF-IDF
+tfidf = TfidfVectorizer()
+tfidf_matrix = tfidf.fit_transform(filtered_tokens)
+feature_names = tfidf.get_feature_names_out()
+
+# 提取关键词
+top_n = 5
+top_indices = tfidf_matrix.sum(axis=0).argsort()[:, -top_n:].tolist()[0]
+keywords = [feature_names[idx] for idx in top_indices]
+
+print("TF-IDF 关键词:", keywords)
+
+TF-IDF 关键词:['nt','发展'，'中国’，'ns','vn']
